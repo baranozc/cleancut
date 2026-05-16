@@ -1,0 +1,41 @@
+# Python gereksiz dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Sanal ortamlar
+venv/
+.venv/
+env/
+.env
+
+# Uygulamaya özel: Müzikler, işlenmiş dosyalar ve indirilen sözler
+music/
+cleancutted/
+sources/
+
+# Her ihtimale karşı ses dosyaları
+*.mp3
+*.wav
+*.flac
+*.m4a
+*.ogg
