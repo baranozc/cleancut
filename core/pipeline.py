@@ -1,5 +1,5 @@
 from typing import Callable, Optional
-from core.models import StepResult
+from core.models import DEFAULT_CUT_MODE, CutMode, StepResult
 from core.genius import fetch_and_save_lyrics
 from core.alignment import align_lyrics, build_line_timestamps
 from core.llm import check_profanity
@@ -19,9 +19,11 @@ def run_pipeline(
     compute_type: str = "int8",
     ollama_url: str = "http://localhost:11434/v1/chat/completions",
     model_name: str = "gemma4:e4b",
+    cut_mode: CutMode | str = DEFAULT_CUT_MODE,
 ) -> StepResult:
     """
     Run the entire CleanCut pipeline sequentially.
+    The output keeps the input's format; its real path is returned in data["output_file"].
     """
     # ── Step 1: Genius Lyrics ───────────────────────────────────────────────
     on_progress("genius", f"Genius'tan şarkı sözleri indiriliyor: «{song_name}» - {artist_name}…")
@@ -73,6 +75,7 @@ def run_pipeline(
         return llm_res
     
     flagged = llm_res.data.get("flagged", [])
+    rejected_phrases = llm_res.data.get("rejected", [])
     if not flagged:
         return StepResult(
             success=True,
@@ -80,6 +83,7 @@ def run_pipeline(
                 "lyrics_lines": lyrics_lines,
                 "line_timestamps": line_timestamps,
                 "flagged": [],
+                "rejected_phrases": rejected_phrases,
                 "unmatched_phrases": [],
                 "cuts": [],
                 "cuts_applied": 0,
@@ -107,6 +111,7 @@ def run_pipeline(
                 "lyrics_lines": lyrics_lines,
                 "line_timestamps": line_timestamps,
                 "flagged": flagged,
+                "rejected_phrases": rejected_phrases,
                 "unmatched_phrases": unmatched_phrases,
                 "cuts": [],
                 "cuts_applied": 0,
@@ -116,14 +121,16 @@ def run_pipeline(
         )
 
     # ── Step 6: Apply Cuts ───────────────────────────────────────────────────
-    on_progress("audio_cut", f"Beat-aware crossfade ile {len(cuts)} kesim aralığı uygulanıyor…")
+    on_progress("audio_cut", f"{len(cuts)} kesim aralığı vuruş ızgarasına göre uygulanıyor ({CutMode(cut_mode).label})…")
     cut_res = apply_cuts(
         input_file=audio_path,
         output_file=output_path,
-        cuts=cuts
+        cuts=cuts,
+        cut_mode=cut_mode,
     )
     if not cut_res.success:
         return cut_res
+    output_path = cut_res.data["output_file"]
 
     return StepResult(
         success=True,
@@ -131,9 +138,13 @@ def run_pipeline(
             "lyrics_lines": lyrics_lines,
             "line_timestamps": line_timestamps,
             "flagged": flagged,
+            "rejected_phrases": rejected_phrases,
             "unmatched_phrases": unmatched_phrases,
             "cuts": cuts,
             "cuts_applied": cut_res.data.get("cuts_applied", 0),
+            "cut_mode": cut_res.data.get("cut_mode"),
+            "cut_ranges": cut_res.data.get("cut_ranges", []),
+            "removed_sec": cut_res.data.get("removed_sec", 0),
             "output_file": output_path
         },
         message=f"Final sürüm başarıyla kaydedildi: {output_path}"

@@ -14,6 +14,7 @@ if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
 # Import only from core
+from core.models import DEFAULT_CUT_MODE, CutMode
 from core.pipeline import run_pipeline
 
 SUPPORTED_EXT = {".mp3", ".wav", ".flac", ".m4a", ".ogg", ".aac"}
@@ -90,6 +91,11 @@ def main():
     parser.add_argument("--language", default="tr", help="Language code of the lyrics (default: tr)")
     parser.add_argument("--model", default="gemma4:e4b", help="Ollama LLM model to use (default: gemma4:e4b)")
     parser.add_argument("--ollama-url", default="http://localhost:11434/v1/chat/completions", help="Ollama endpoint URL")
+    parser.add_argument(
+        "--cut-mode", default=DEFAULT_CUT_MODE.value, choices=[m.value for m in CutMode],
+        help=" | ".join(f"{m.value}: {m.label} - {m.description}" for m in CutMode)
+             + f" (default: {DEFAULT_CUT_MODE.value})",
+    )
     args = parser.parse_args()
 
     # Paths setup
@@ -165,7 +171,8 @@ def main():
 
     cleancutted_dir.mkdir(exist_ok=True)
     safe_name = f"{song_name}-{artist_name}".replace(" ", "_")
-    output_path = str(cleancutted_dir / f"{safe_name}_cleancutted.mp3")
+    # Çıktı, kalite kaybı olmasın diye kaynakla aynı formatta yazılır
+    output_path = str(cleancutted_dir / f"{safe_name}_cleancutted{Path(audio_file_path).suffix}")
 
     print("\n═" * 74)
     print(f"  • Ses Dosyası  : {audio_file_path}")
@@ -173,6 +180,7 @@ def main():
     print(f"  • Sanatçı      : {artist_name}")
     print(f"  • Cihaz        : {args.device}")
     print(f"  • Model        : {args.model}")
+    print(f"  • Kesim modu   : {CutMode(args.cut_mode).label} ({args.cut_mode})")
     print("═" * 74 + "\n")
 
     # Run core pipeline
@@ -188,7 +196,8 @@ def main():
         language_code=args.language,
         device=args.device,
         model_name=args.model,
-        ollama_url=args.ollama_url
+        ollama_url=args.ollama_url,
+        cut_mode=args.cut_mode,
     )
 
     print("\n" + "═" * 74)
