@@ -1,4 +1,103 @@
-# Python gereksiz dosyaları
+# ══════════════════════════════════════════════════════════════════════════
+# Gizli bilgiler ve ortam değişkenleri — ASLA commit edilmez
+# ══════════════════════════════════════════════════════════════════════════
+.env
+.env.*
+!.env.example
+*.env
+*.secret
+*.secrets
+secrets/
+secret/
+credentials*
+*credentials*.json
+*token*.json
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.kdbx
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.ppk
+.netrc
+.npmrc
+.pypirc
+
+# Yerel/kişisel ayar dosyaları (bilgisayar yolları, kullanıcı adı, izinler içerebilir)
+*.local
+*.local.*
+.claude/
+CLAUDE.local.md
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# ══════════════════════════════════════════════════════════════════════════
+# Uygulama verileri: kişisel müzikler, işlenmiş çıktılar, indirilen sözler
+# ══════════════════════════════════════════════════════════════════════════
+music/
+cleancutted/
+sources/
+*lyrics*.txt
+
+# Ses/video dosyaları (klasör dışına konmuş olsalar bile)
+*.mp3
+*.wav
+*.flac
+*.m4a
+*.ogg
+*.opus
+*.aac
+*.wma
+*.aif
+*.aiff
+*.mp4
+*.mkv
+*.webm
+*.srt
+*.vtt
+
+# Model ağırlıkları ve önbellekleri (büyük dosyalar, indirilen içerik)
+models/
+pretrained_models/
+.cache/
+nltk_data/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.bin
+
+# Notebook'lar (çıktılarında yerel yollar ve kişisel veriler kalabilir)
+*.ipynb
+.ipynb_checkpoints/
+
+# ══════════════════════════════════════════════════════════════════════════
+# Loglar ve geçici dosyalar
+# ══════════════════════════════════════════════════════════════════════════
+*.log
+logs/
+nohup.out
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# ══════════════════════════════════════════════════════════════════════════
+# Python
+# ══════════════════════════════════════════════════════════════════════════
 __pycache__/
 *.py[cod]
 *$py.class
@@ -21,21 +120,31 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
 
 # Sanal ortamlar
 venv/
 .venv/
 env/
-.env
+ENV/
 
-# Uygulamaya özel: Müzikler, işlenmiş dosyalar ve indirilen sözler
-music/
-cleancutted/
-sources/
-
-# Her ihtimale karşı ses dosyaları
-*.mp3
-*.wav
-*.flac
-*.m4a
-*.ogg
+# ══════════════════════════════════════════════════════════════════════════
+# İşletim sistemi dosyaları
+# ══════════════════════════════════════════════════════════════════════════
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+.DS_Store
+._*
